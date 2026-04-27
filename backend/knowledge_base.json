@@ -1,0 +1,152 @@
+[
+  {
+    "id": "deposit_cap",
+    "type": "Security Deposit",
+    "description": "Landlord demands security deposit exceeding legal limit",
+    "statute": "Karnataka Rent Act Section 4",
+    "right": "Tenant can only be charged up to 3 months rent as deposit",
+    "remedy": "Excess deposit must be refunded within 30 days of vacating",
+    "related_clauses": ["penalty_clause", "termination_clause"],
+    "violation_keywords": ["security deposit", "advance", "refundable deposit"]
+  },
+  {
+    "id": "lock_in",
+    "type": "Lock-in Period",
+    "description": "Agreement prohibits tenant from vacating before a fixed period",
+    "statute": "Karnataka Rent Act Section 7",
+    "right": "Lock-in period must be mutually agreed and cannot exceed 11 months without registration",
+    "remedy": "Tenant can challenge unreasonable lock-in at Rent Tribunal",
+    "related_clauses": ["termination_clause", "penalty_clause"],
+    "violation_keywords": ["lock-in", "minimum stay", "lock in period"]
+  },
+  {
+    "id": "rent_escalation",
+    "type": "Rent Escalation",
+    "description": "Annual rent increase clause beyond permissible limit",
+    "statute": "Karnataka Rent Act Section 8",
+    "right": "Rent increase capped at 10% per year under Karnataka law",
+    "remedy": "File complaint with Rent Controller if increase exceeds 10%",
+    "related_clauses": ["maintenance_clause"],
+    "violation_keywords": ["rent increase", "escalation", "annual hike", "increment"]
+  },
+  {
+    "id": "landlord_entry",
+    "type": "Landlord Entry Rights",
+    "description": "Clause allowing landlord to enter premises without notice",
+    "statute": "Karnataka Rent Act Section 12",
+    "right": "Landlord must give minimum 24 hours written notice before entry",
+    "remedy": "Tenant can refuse entry and report harassment to police",
+    "related_clauses": [],
+    "violation_keywords": ["entry", "inspection", "landlord visit", "anytime"]
+  },
+  {
+    "id": "termination_clause",
+    "type": "Termination Notice",
+    "description": "Unfair termination notice period shorter than legal minimum",
+    "statute": "Karnataka Rent Act Section 14",
+    "right": "Minimum 1 month written notice required from either party",
+    "remedy": "Eviction without notice is invalid, tenant can approach Rent Tribunal",
+    "related_clauses": ["lock_in", "penalty_clause"],
+    "violation_keywords": ["terminate", "vacate", "notice period", "eviction"]
+  },
+  {
+    "id": "maintenance_clause",
+    "type": "Maintenance Responsibility",
+    "description": "All maintenance costs unilaterally imposed on tenant",
+    "statute": "Karnataka Rent Act Section 16",
+    "right": "Major structural repairs are landlord's responsibility",
+    "remedy": "Tenant can deduct repair costs from rent if landlord refuses after written notice",
+    "related_clauses": ["rent_escalation"],
+    "violation_keywords": ["maintenance", "repair", "damage", "wear and tear"]
+  },
+  {
+    "id": "penalty_clause",
+    "type": "Penalty/Liquidated Damages",
+    "description": "Disproportionate penalties for minor breaches by tenant",
+    "statute": "Indian Contract Act Section 74",
+    "right": "Penalty must be reasonable and not punitive",
+    "remedy": "Court can reduce unreasonable penalty to actual damages",
+    "related_clauses": ["deposit_cap", "lock_in", "termination_clause"],
+    "violation_keywords": ["penalty", "fine", "damages", "forfeit"]
+  },
+  {
+    "id": "subletting",
+    "type": "Subletting Restriction",
+    "description": "Absolute ban on subletting without any provision for landlord consent",
+    "statute": "Karnataka Rent Act Section 18",
+    "right": "Tenant may sublet with written landlord consent",
+    "remedy": "Blanket bans without consent mechanism may be challenged",
+    "related_clauses": [],
+    "violation_keywords": ["sublet", "sublease", "assign", "third party"]
+  },
+  {
+    "id": "utility_charges",
+    "type": "Utility Charges",
+    "description": "Landlord charges above meter reading or adds arbitrary utility fees",
+    "statute": "Electricity Act 2003, Karnataka Electricity Tariff",
+    "right": "Tenant pays only actual meter-based consumption at government tariff",
+    "remedy": "Dispute inflated bills with BESCOM and deduct from rent",
+    "related_clauses": ["maintenance_clause"],
+    "violation_keywords": ["electricity", "water charges", "utility", "BESCOM", "meter"]
+  },
+  {
+    "id": "pet_restriction",
+    "type": "Pet Restriction",
+    "description": "Blanket no-pets clause with penalty",
+    "statute": "No specific statute — governed by contract law",
+    "right": "Enforceable if agreed at signing, but excessive penalties challengeable",
+    "remedy": "Challenge disproportionate pet penalties under Contract Act Section 74",
+    "related_clauses": ["penalty_clause"],
+    "violation_keywords": ["pet", "animal", "dog", "cat"]
+  },
+  {
+    "id": "painting_restoration",
+    "type": "Painting/Restoration on Vacating",
+    "description": "Tenant required to repaint entire flat at own cost before vacating",
+    "statute": "Karnataka Rent Act Section 16",
+    "right": "Tenant responsible only for damage beyond normal wear and tear",
+    "remedy": "Refuse deduction from deposit; approach Small Causes Court if deducted",
+    "related_clauses": ["deposit_cap", "maintenance_clause"],
+    "violation_keywords": ["paint", "repaint", "restore", "whitewash"]
+  },
+  {
+    "id": "arbitrary_termination",
+    "type": "Arbitrary Termination by Landlord",
+    "description": "Landlord can terminate without cause at any time",
+    "statute": "Karnataka Rent Act Section 14, 21",
+    "right": "Landlord needs valid grounds (non-payment, personal use, demolition) for eviction",
+    "remedy": "Challenge arbitrary eviction at Rent Tribunal",
+    "related_clauses": ["termination_clause", "lock_in"],
+    "violation_keywords": ["owner use", "demolish", "evict", "without cause", "at landlord discretion"]
+  },
+  {
+    "id": "registration",
+    "type": "Registration Requirement",
+    "description": "Lease over 11 months not registered",
+    "statute": "Registration Act 1908, Section 17",
+    "right": "Leases over 11 months MUST be registered; unregistered lease is inadmissible as evidence",
+    "remedy": "Insist on registration at sub-registrar office; costs shared equally",
+    "related_clauses": ["lock_in"],
+    "violation_keywords": ["registered", "stamp duty", "registration", "11 months"]
+  },
+  {
+    "id": "goods_lien",
+    "type": "Landlord's Lien on Tenant Goods",
+    "description": "Clause allowing landlord to seize tenant goods for unpaid rent",
+    "statute": "No valid statutory basis in Karnataka",
+    "right": "Landlord cannot seize goods without court order",
+    "remedy": "File FIR for theft if landlord seizes goods; approach Rent Tribunal",
+    "related_clauses": ["deposit_cap", "penalty_clause"],
+    "violation_keywords": ["seize", "confiscate", "hold goods", "lien"]
+  },
+  {
+    "id": "dispute_resolution",
+    "type": "Dispute Resolution Clause",
+    "description": "Clause forcing arbitration in city other than tenant's residence",
+    "statute": "Arbitration and Conciliation Act 1996, Section 20",
+    "right": "Arbitration venue must be reasonable and not oppressive",
+    "remedy": "Challenge venue in High Court; Karnataka courts have jurisdiction",
+    "related_clauses": [],
+    "violation_keywords": ["arbitration", "dispute", "jurisdiction", "legal proceedings"]
+  }
+]
