@@ -6,7 +6,7 @@ def retrieve(
     query_text: str,
     pinecone_index,
     graph,
-    top_k: int = 3
+    top_k: int = 5
 ) -> list[dict]:
     """
     Full retrieval pipeline:
