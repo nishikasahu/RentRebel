@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-function AudioRecorder({ audioBlob, setAudioBlob }) {
+function AudioRecorder({ audioBlob, setAudioBlob, audioTranscript, setAudioTranscript, isAnalyzing }) {
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState('Stopped');
   const mediaRecorderRef = useRef(null);
@@ -42,7 +42,7 @@ function AudioRecorder({ audioBlob, setAudioBlob }) {
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
-        setStatus('Stopped');
+        setStatus('Audio ready');
         stopStream();
       };
 
@@ -69,11 +69,11 @@ function AudioRecorder({ audioBlob, setAudioBlob }) {
 
       <div className="audio-controls">
         {!isRecording ? (
-          <button className="ghost-button" type="button" onClick={startRecording}>
+          <button className="ghost-button" type="button" onClick={startRecording} disabled={isAnalyzing}>
             Record audio
           </button>
         ) : (
-          <button className="ghost-button danger" type="button" onClick={stopRecording}>
+          <button className="ghost-button danger" type="button" onClick={stopRecording} disabled={isAnalyzing}>
             Stop recording
           </button>
         )}
@@ -83,6 +83,10 @@ function AudioRecorder({ audioBlob, setAudioBlob }) {
       <div className="file-status">
         {audioBlob ? <span className="file-name">Audio captured</span> : <span>No audio stored yet</span>}
       </div>
+
+      {audioTranscript ? (
+        <p className="helper-copy transcript-preview">Transcript available for preview in the results panel.</p>
+      ) : null}
     </div>
   );
 }

@@ -1,35 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Header from './components/Header';
 import InputPanel from './components/InputPanel';
 import ResultPanel from './components/ResultPanel';
 
-const mockClauses = [
-  {
-    clause: 'Security deposit is 10 months rent',
-    status: 'red',
-    explanation: 'Exceeds legal limit of 2 months under Karnataka Rent rules',
-  },
-  {
-    clause: 'Landlord can enter anytime without notice',
-    status: 'red',
-    explanation: 'Violates tenant privacy rules requiring notice',
-  },
-  {
-    clause: 'Painting charges of ₹25,000',
-    status: 'yellow',
-    explanation: 'May be excessive depending on agreement terms',
-  },
-];
+const ANALYZE_URL = 'http://localhost:8000/analyze/';
 
 function App() {
-  const analysisTimerRef = useRef(null);
   const [query, setQuery] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [audioBlob, setAudioBlob] = useState(null);
+  const [audioTranscript, setAudioTranscript] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState([]);
+  const [summary, setSummary] = useState({ totalClauses: 0, violations: 0, cautions: 0, ok: 0 });
   const [error, setError] = useState('');
-  const [analysisNote, setAnalysisNote] = useState('');
   const [analysisSource, setAnalysisSource] = useState('');
 
   useEffect(() => {
@@ -38,42 +22,27 @@ function App() {
     }
   }, [query, selectedFile, audioBlob, error]);
 
-  useEffect(() => {
-    if (!results.length) {
-      setAnalysisNote('');
-      setAnalysisSource('');
-      return;
+  const inputSummary = useMemo(() => {
+    if (audioBlob) {
+      return 'Audio recording ready for backend transcription and audit.';
     }
 
     if (selectedFile) {
-      setAnalysisSource(selectedFile.name);
-    } else if (audioBlob) {
-      setAnalysisSource('Recorded audio');
-    } else if (query.trim()) {
-      setAnalysisSource('Text query');
+      return `Uploaded file: ${selectedFile.name}`;
     }
 
-    setAnalysisNote('Mock analysis complete. Backend integration can be wired to POST /analyze later.');
-  }, [results, selectedFile, audioBlob, query]);
-
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(analysisTimerRef.current);
-    };
-  }, []);
-
-  const extractedText = useMemo(() => {
-    const sourceText = query.trim() || 'Uploaded document text will appear here after extraction.';
-    if (!results.length) {
-      return sourceText;
+    if (query.trim()) {
+      return query.trim();
     }
 
-    const clausePreview = results.map((item) => item.clause).join(' • ');
-    return `${sourceText}\n\nHighlighted clauses: ${clausePreview}`;
-  }, [query, results]);
+    return 'Awaiting input';
+  }, [query, selectedFile, audioBlob]);
 
-  const handleAnalyze = () => {
-    const hasInput = query.trim() || selectedFile || audioBlob;
+  const handleAnalyze = async () => {
+    const hasText = Boolean(query.trim());
+    const hasFile = Boolean(selectedFile);
+    const hasAudio = Boolean(audioBlob);
+    const hasInput = hasText || hasFile || hasAudio;
 
     if (!hasInput) {
       setError('Add text, a file, or audio before analyzing.');
@@ -83,11 +52,66 @@ function App() {
     setError('');
     setIsAnalyzing(true);
     setResults([]);
+    setSummary({ totalClauses: 0, violations: 0, cautions: 0, ok: 0 });
 
-    analysisTimerRef.current = window.setTimeout(() => {
-      setResults(mockClauses);
+    try {
+      let response;
+
+      if (hasAudio) {
+        setAnalysisSource('Recorded audio');
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'recording.webm');
+
+        response = await fetch('http://localhost:8000/ingest/audio', {
+          method: 'POST',
+          body: formData,
+        });
+      } else if (hasFile) {
+        const isPdf = selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf');
+        setAnalysisSource(isPdf ? `Uploaded PDF: ${selectedFile.name}` : `Uploaded image: ${selectedFile.name}`);
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        response = await fetch(isPdf ? 'http://localhost:8000/ingest/pdf' : 'http://localhost:8000/ingest/image', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        setAnalysisSource('Text input');
+
+        response = await fetch(ANALYZE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: query.trim() }),
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`Analysis failed (${response.status})`);
+      }
+
+      const data = await response.json();
+      const safeResults = Array.isArray(data?.results) ? data.results : [];
+
+      setSummary({
+        totalClauses: Number(data?.total_clauses) || safeResults.length,
+        violations: Number(data?.violations) || 0,
+        cautions: Number(data?.cautions) || 0,
+        ok: Number(data?.ok) || 0,
+      });
+      setResults(safeResults);
+
+      if (!safeResults.length) {
+        setError('Analysis completed, but no clause results were returned.');
+      }
+    } catch (analysisError) {
+      setError(analysisError instanceof Error ? analysisError.message : 'Unable to analyze agreement right now.');
+    } finally {
       setIsAnalyzing(false);
-    }, 1400);
+    }
   };
 
   return (
@@ -106,6 +130,8 @@ function App() {
             setSelectedFile={setSelectedFile}
             audioBlob={audioBlob}
             setAudioBlob={setAudioBlob}
+            audioTranscript={audioTranscript}
+            setAudioTranscript={setAudioTranscript}
             isAnalyzing={isAnalyzing}
             onAnalyze={handleAnalyze}
             error={error}
@@ -113,9 +139,10 @@ function App() {
 
           <ResultPanel
             results={results}
+            summary={summary}
             isAnalyzing={isAnalyzing}
-            extractedText={extractedText}
-            analysisNote={analysisNote}
+            extractedText={inputSummary}
+            audioTranscript={audioTranscript}
             analysisSource={analysisSource}
           />
         </section>

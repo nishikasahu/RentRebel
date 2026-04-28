@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from graph_builder import build_knowledge_graph
 from pinecone_setup import get_pinecone_index
-from routers.ingest import router as ingest_router
+from ingestion import router as ingestion_router
 from routers.analyze import router as analyze_router
 
 # State shared across the app
@@ -36,7 +36,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(ingest_router)
+app.include_router(ingestion_router)
 app.include_router(analyze_router)
 
 @app.get("/health")

@@ -1,11 +1,35 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-function FileUpload({ selectedFile, onFileSelect }) {
+function FileUpload({ selectedFile, onFileSelect, isAnalyzing }) {
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreviewUrl('');
+      return undefined;
+    }
+
+    const isImage = selectedFile.type.startsWith('image/');
+    if (!isImage) {
+      setPreviewUrl('');
+      return undefined;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreviewUrl(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
 
   const acceptFile = (file) => {
     if (!file) {
+      return;
+    }
+
+    const isAllowedType = ['application/pdf', 'image/png', 'image/jpeg'].includes(file.type);
+    if (!isAllowedType) {
       return;
     }
 
@@ -36,12 +60,13 @@ function FileUpload({ selectedFile, onFileSelect }) {
       <input
         ref={inputRef}
         type="file"
-        accept="application/pdf,image/*"
+        accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
         className="file-input"
+        disabled={isAnalyzing}
         onChange={(event) => acceptFile(event.target.files?.[0])}
       />
 
-      <button className="ghost-button" type="button" onClick={() => inputRef.current?.click()}>
+      <button className="ghost-button" type="button" onClick={() => inputRef.current?.click()} disabled={isAnalyzing}>
         Choose file
       </button>
 
@@ -52,6 +77,8 @@ function FileUpload({ selectedFile, onFileSelect }) {
           <span>Drop a file here or browse</span>
         )}
       </div>
+
+      {previewUrl ? <img className="file-preview" src={previewUrl} alt="Uploaded document preview" /> : null}
     </div>
   );
 }

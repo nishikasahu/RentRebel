@@ -8,6 +8,8 @@ function InputPanel({
   setSelectedFile,
   audioBlob,
   setAudioBlob,
+  audioTranscript,
+  setAudioTranscript,
   isAnalyzing,
   onAnalyze,
   error,
@@ -37,14 +39,27 @@ function InputPanel({
       </div>
 
       <div className="dual-grid">
-        <FileUpload selectedFile={selectedFile} onFileSelect={setSelectedFile} />
-        <AudioRecorder audioBlob={audioBlob} setAudioBlob={setAudioBlob} />
+        <FileUpload selectedFile={selectedFile} onFileSelect={setSelectedFile} isAnalyzing={isAnalyzing} />
+        <AudioRecorder
+          audioBlob={audioBlob}
+          setAudioBlob={setAudioBlob}
+          audioTranscript={audioTranscript}
+          setAudioTranscript={setAudioTranscript}
+          isAnalyzing={isAnalyzing}
+        />
       </div>
 
       {error ? <p className="form-error">{error}</p> : null}
 
-      <button className="analyze-button" type="button" onClick={onAnalyze} disabled={isAnalyzing}>
-        {isAnalyzing ? 'Analyzing...' : 'Analyze Agreement'}
+      <button className="analyze-button" type="button" onClick={onAnalyze} disabled={isAnalyzing} aria-busy={isAnalyzing}>
+        {isAnalyzing ? (
+          <>
+            <span className="button-spinner" aria-hidden="true" />
+            Processing...
+          </>
+        ) : (
+          'Analyze Agreement'
+        )}
       </button>
     </section>
   );

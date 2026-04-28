@@ -1,3 +1,4 @@
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File
 import fitz  # PyMuPDF
 import pytesseract
 from PIL import Image
@@ -7,10 +8,12 @@ import re
 import os
 from groq import Groq
 from dotenv import load_dotenv
+from rag_pipeline import run_full_audit
 
 load_dotenv()
 
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+router = APIRouter(prefix="/ingest", tags=["Ingestion"])
 
 # Load whisper once at startup (small model = fast + free)
 whisper_model = whisper.load_model("base")
@@ -59,6 +62,25 @@ def transcribe_audio(file_bytes: bytes, filename: str) -> str:
     return result["text"].strip()
 
 
+def _build_audit_response(raw_text: str, request: Request) -> dict:
+    graph = getattr(request.app.state, "graph", None)
+    pinecone_index = getattr(request.app.state, "pinecone_index", None)
+
+    if not graph or not pinecone_index:
+        raise HTTPException(status_code=503, detail="Server not fully initialized")
+
+    clauses = segment_clauses(raw_text)
+    audit_results = run_full_audit(clauses, pinecone_index, graph)
+
+    return {
+        "total_clauses": len(audit_results),
+        "violations": sum(1 for r in audit_results if r["verdict"] == "violation"),
+        "cautions": sum(1 for r in audit_results if r["verdict"] == "caution"),
+        "ok": sum(1 for r in audit_results if r["verdict"] == "ok"),
+        "results": audit_results,
+    }
+
+
 # ─── CLAUSE SEGMENTATION ────────────────────────────────────────
 
 def segment_clauses(raw_text: str) -> list[dict]:
@@ -99,3 +121,44 @@ Agreement text:
     except Exception:
         # Fallback: return whole text as one clause if parsing fails
         return [{"clause_text": raw_text, "clause_type": "Other"}]
+
+
+@router.post("/pdf")
+async def ingest_pdf(request: Request, file: UploadFile = File(...)):
+    filename = (file.filename or "").lower()
+    if file.content_type not in {"application/pdf"} and not filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Please upload a PDF file")
+
+    file_bytes = await file.read()
+    extracted_text = extract_text_from_pdf(file_bytes)
+
+    if not extracted_text.strip():
+        raise HTTPException(status_code=400, detail="No text could be extracted from the PDF")
+
+    return _build_audit_response(extracted_text, request)
+
+
+@router.post("/image")
+async def ingest_image(request: Request, file: UploadFile = File(...)):
+    filename = (file.filename or "").lower()
+    if not (file.content_type or "").startswith("image/") and not filename.endswith((".png", ".jpg", ".jpeg")):
+        raise HTTPException(status_code=400, detail="Please upload a PNG or JPG image")
+
+    file_bytes = await file.read()
+    extracted_text = extract_text_from_image(file_bytes)
+
+    if not extracted_text.strip():
+        raise HTTPException(status_code=400, detail="No text could be extracted from the image")
+
+    return _build_audit_response(extracted_text, request)
+
+
+@router.post("/audio")
+async def ingest_audio(request: Request, file: UploadFile = File(...)):
+    file_bytes = await file.read()
+    transcript = transcribe_audio(file_bytes, file.filename or "audio.webm")
+
+    if not transcript.strip():
+        raise HTTPException(status_code=400, detail="No speech could be transcribed from the audio")
+
+    return _build_audit_response(transcript, request)
