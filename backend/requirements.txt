@@ -4,3 +4,11 @@ networkx
 pinecone
 python-dotenv
 sentence-transformers
+pymupdf
+pytesseract
+pillow
+openai-whisper
+groq
+python-multipart
+transformers
+torch
