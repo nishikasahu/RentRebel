@@ -57,7 +57,11 @@ def transcribe_audio(file_bytes: bytes, filename: str) -> str:
     with open(temp_path, "wb") as f:
         f.write(file_bytes)
 
-    result = whisper_model.transcribe(temp_path)
+    result = whisper_model.transcribe(
+    temp_path,
+    language=language,          # None = auto detect
+    initial_prompt="This is a rental agreement clause in Kannada or English."
+    )
     os.remove(temp_path)
     return result["text"].strip()
 
@@ -80,6 +84,14 @@ def _build_audit_response(raw_text: str, request: Request) -> dict:
         "results": audit_results,
     }
 
+def transcribe_audio(file_bytes: bytes, filename: str, language: str = None) -> str:
+    temp_path = f"/tmp/{filename}"
+    with open(temp_path, "wb") as f:
+        f.write(file_bytes)
+
+    result = whisper_model.transcribe(temp_path, language=language)
+    os.remove(temp_path)
+    return result["text"].strip()
 
 # ─── CLAUSE SEGMENTATION ────────────────────────────────────────
 
@@ -89,6 +101,8 @@ def segment_clauses(raw_text: str) -> list[dict]:
     Returns a list of clause dicts.
     """
     prompt = f"""You are a legal document parser specializing in Indian rental agreements.
+The input text may be in English, Kannada, Hindi, or other Indian languages. 
+Analyze the meaning regardless of language and classify accordingly.
 
 Given the following rental agreement text, identify and extract individual clauses.
 For each clause return a JSON array where each item has:
