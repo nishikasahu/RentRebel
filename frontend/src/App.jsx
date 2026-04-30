@@ -1,11 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
 import Header from './components/Header';
+import SplashScreen from './components/SplashScreen';
 import InputPanel from './components/InputPanel';
 import ResultPanel from './components/ResultPanel';
 
 const ANALYZE_URL = 'http://localhost:8000/analyze/';
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashFade, setSplashFade] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setSplashFade(true), 4200);
+    const t2 = setTimeout(() => setShowSplash(false), 4600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
+
   const [query, setQuery] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [audioBlob, setAudioBlob] = useState(null);
@@ -37,6 +50,17 @@ function App() {
 
     return 'Awaiting input';
   }, [query, selectedFile, audioBlob]);
+
+  const handleClearInput = () => {
+    setQuery('');
+    setSelectedFile(null);
+    setAudioBlob(null);
+    setAudioTranscript('');
+    setResults([]);
+    setSummary({ totalClauses: 0, violations: 0, cautions: 0, ok: 0 });
+    setAnalysisSource('');
+    setError('');
+  };
 
   const handleAnalyze = async () => {
     const hasText = Boolean(query.trim());
@@ -119,9 +143,11 @@ function App() {
       <div className="background-glow background-glow-left" />
       <div className="background-glow background-glow-right" />
 
+      {showSplash ? <SplashScreen fade={splashFade} /> : null}
+
       <main className="app-frame">
         <Header />
-
+        
         <section className="content-grid">
           <InputPanel
             query={query}
@@ -134,6 +160,7 @@ function App() {
             setAudioTranscript={setAudioTranscript}
             isAnalyzing={isAnalyzing}
             onAnalyze={handleAnalyze}
+            onClearInput={handleClearInput}
             error={error}
           />
 
@@ -147,6 +174,12 @@ function App() {
           />
         </section>
       </main>
+      <footer className="app-footer">
+        <div className="footer-inner">
+          <div className="footer-line1">RentRebel · AI-powered rental agreement analysis</div>
+          <div className="footer-line2">Powered by Multi-Modal Graph RAG · Karnataka Rent Act 2025 · Not legal advice</div>
+        </div>
+      </footer>
     </div>
   );
 }

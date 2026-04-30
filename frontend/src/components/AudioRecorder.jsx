@@ -77,7 +77,17 @@ function AudioRecorder({ audioBlob, setAudioBlob, audioTranscript, setAudioTrans
             Stop recording
           </button>
         )}
-        <span className={`status-pill ${isRecording ? 'warning' : 'muted'}`}>{status}</span>
+        {/* audio status indicator */}
+        <div className="audio-status">
+          {audioBlob ? (
+            <span className="audio-ready">
+              <span className="audio-dot" aria-hidden />
+              Audio ready
+            </span>
+          ) : (
+            <span className="status-pill muted">{status}</span>
+          )}
+        </div>
       </div>
 
       <div className="file-status">

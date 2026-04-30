@@ -6,31 +6,29 @@ function ResultPanel({ results, summary, isAnalyzing, extractedText, audioTransc
       <div className="card-header">
         <div>
           <p className="section-label">Results</p>
-          <h2>Agreement audit</h2>
+          <h2>
+            Agreement audit
+            <span className="source-chip">Source: {analysisSource || 'Text input'}</span>
+          </h2>
         </div>
-        <span className="status-pill muted">Backend connected</span>
       </div>
 
-      <div className="result-meta">
-        <div>
-          <p className="meta-label">Source</p>
-          <p className="meta-value">{analysisSource || 'Awaiting input'}</p>
-        </div>
-        <div>
+      <div className="result-meta stats-grid">
+        <div className="stat-card total">
           <p className="meta-label">Total clauses</p>
-          <p className="meta-value">{summary.totalClauses}</p>
+          <p className="stat-number">{summary.totalClauses}</p>
         </div>
-        <div>
+        <div className="stat-card violations">
           <p className="meta-label">Violations</p>
-          <p className="meta-value">{summary.violations}</p>
+          <p className="stat-number">{summary.violations}</p>
         </div>
-        <div>
+        <div className="stat-card cautions">
           <p className="meta-label">Cautions</p>
-          <p className="meta-value">{summary.cautions}</p>
+          <p className="stat-number">{summary.cautions}</p>
         </div>
-        <div>
+        <div className="stat-card ok">
           <p className="meta-label">OK</p>
-          <p className="meta-value">{summary.ok}</p>
+          <p className="stat-number">{summary.ok}</p>
         </div>
       </div>
 

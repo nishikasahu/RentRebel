@@ -12,8 +12,11 @@ function InputPanel({
   setAudioTranscript,
   isAnalyzing,
   onAnalyze,
+  onClearInput,
   error,
 }) {
+  const hasInput = Boolean(query.trim() || selectedFile || audioBlob);
+
   return (
     <section className="card input-card">
       <div className="card-header">
@@ -51,16 +54,21 @@ function InputPanel({
 
       {error ? <p className="form-error">{error}</p> : null}
 
-      <button className="analyze-button" type="button" onClick={onAnalyze} disabled={isAnalyzing} aria-busy={isAnalyzing}>
-        {isAnalyzing ? (
-          <>
-            <span className="button-spinner" aria-hidden="true" />
-            Processing...
-          </>
-        ) : (
-          'Analyze Agreement'
-        )}
-      </button>
+      <div className="button-group">
+        <button className="analyze-button" type="button" onClick={onAnalyze} disabled={isAnalyzing} aria-busy={isAnalyzing}>
+          {isAnalyzing ? (
+            <>
+              <span className="button-spinner" aria-hidden="true" />
+              Processing...
+            </>
+          ) : (
+            'Analyze Agreement'
+          )}
+        </button>
+        <button className="clear-input-button" type="button" onClick={onClearInput} disabled={!hasInput || isAnalyzing}>
+          Clear Input
+        </button>
+      </div>
     </section>
   );
 }
