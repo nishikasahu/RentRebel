@@ -77,10 +77,14 @@ def determine_verdict(clause_text: str, retrieved_contexts: list[dict]) -> dict:
     remedy = gc.get("remedy", "N/A")
     clause_type_from_kb = gc.get("clause_type", "Unknown")
 
-    prompt = f"""You are a legal assistant analyzing a rental agreement clause under Karnataka rental law.
+    prompt = f"""You are an expert in Karnataka tenant law and Indian rental agreements.
 
-CLAUSE SUBMITTED FOR REVIEW:
-{clause_text}
+A tenant has submitted the following rental clause for review. 
+It may be written formally or casually — interpret the meaning, not just the words.
+For example "landlord wants 6 months advance" means the same as 
+"Tenant shall pay security deposit equivalent to 6 months rent."
+
+CLAUSE: "{clause_text}"
 
 RETRIEVED LEGAL RULE:
 Rule: {rule}

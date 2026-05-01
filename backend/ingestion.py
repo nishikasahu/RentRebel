@@ -101,19 +101,27 @@ def segment_clauses(raw_text: str) -> list[dict]:
     Returns a list of clause dicts.
     """
     prompt = f"""You are a legal document parser specializing in Indian rental agreements.
-The input text may be in English, Kannada, Hindi, or other Indian languages. 
-Analyze the meaning regardless of language and classify accordingly.
 
-Given the following rental agreement text, identify and extract individual clauses.
-For each clause return a JSON array where each item has:
-- "clause_text": the original clause text
+Given the following text, identify and extract individual rental agreement clauses or concerns.
+The input may be:
+- Formal legal language from a typed/scanned agreement
+- Casual conversational language ("landlord wants 6 months advance")
+- A single sentence describing one clause
+- Mixed language including Hindi or Kannada words
+
+For EACH distinct clause or concern found, return a JSON array where each item has:
+- "clause_text": the original text of that clause
 - "clause_type": one of [Security Deposit, Lock-in Period, Rent Escalation, 
   Landlord Entry, Termination Notice, Maintenance, Penalty, Subletting, 
   Utility Charges, Pet Restriction, Registration, Other]
 
+Be generous in interpretation — if someone says "he wants 10 months advance" 
+that is a Security Deposit clause. If someone says "cant leave before 2 years" 
+that is a Lock-in Period clause.
+
 Return ONLY a valid JSON array, no explanation, no markdown.
 
-Agreement text:
+Input text:
 {raw_text[:4000]}
 """
 

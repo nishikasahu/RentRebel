@@ -7,7 +7,12 @@
     "right": "Tenant can only be charged up to 3 months rent as deposit",
     "remedy": "Excess deposit must be refunded within 30 days of vacating",
     "related_clauses": ["penalty_clause", "termination_clause"],
-    "violation_keywords": ["security deposit", "advance", "refundable deposit"]
+    "violation_keywords": [
+      "security deposit", "advance", "refundable deposit",
+      "months advance", "advance rent", "deposit amount",
+      "wants advance", "asking advance", "pay advance",
+      "6 months", "8 months", "10 months", "12 months"
+    ]
   },
   {
     "id": "lock_in",
@@ -17,7 +22,12 @@
     "right": "Lock-in period must be mutually agreed and cannot exceed 11 months without registration",
     "remedy": "Tenant can challenge unreasonable lock-in at Rent Tribunal",
     "related_clauses": ["termination_clause", "penalty_clause"],
-    "violation_keywords": ["lock-in", "minimum stay", "lock in period"]
+    "violation_keywords": [
+      "lock-in", "minimum stay", "lock in period",
+      "cant leave", "cannot leave", "must stay",
+      "before 2 years", "before 1 year", "minimum period",
+      "not allowed to vacate", "no exit"
+    ]
   },
   {
     "id": "rent_escalation",
@@ -27,7 +37,12 @@
     "right": "Rent increase capped at 10% per year under Karnataka law",
     "remedy": "File complaint with Rent Controller if increase exceeds 10%",
     "related_clauses": ["maintenance_clause"],
-    "violation_keywords": ["rent increase", "escalation", "annual hike", "increment"]
+    "violation_keywords": [
+      "rent increase", "escalation", "annual hike", "increment",
+      "increase rent", "raise rent", "rent goes up",
+      "every year increase", "hike every year", "20% increase",
+      "25% increase", "30% hike"
+    ]
   },
   {
     "id": "landlord_entry",
@@ -37,7 +52,11 @@
     "right": "Landlord must give minimum 24 hours written notice before entry",
     "remedy": "Tenant can refuse entry and report harassment to police",
     "related_clauses": [],
-    "violation_keywords": ["entry", "inspection", "landlord visit", "anytime"]
+    "violation_keywords": [
+      "entry", "inspection", "landlord visit", "anytime",
+      "come anytime", "enter without", "no notice",
+      "walk in", "check anytime", "visit without telling"
+    ]
   },
   {
     "id": "termination_clause",
